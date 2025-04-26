@@ -56,14 +56,12 @@ def GPI(A, B, s=1):
     t = 1
     W = orth(np.random.rand(m, k))
     
-    # Create A_til more efficiently - avoid creating full matrices when possible
-    # We'll use A_til @ W = alpha * W - A @ W, without creating A_til explicitly
     
     # Main iteration
     obj = []
     while err > 1e-3 and t < 100:  # Add iteration limit for safety
-        # Calculate M = 2 * A_til @ W + 2 * B = 2 * (alpha * W - A @ W) + 2 * B
-        AW = A_sym @ W  # This is more memory-efficient
+        # This step is the same as MATLAB: M = 2*(alpha.*eye(m)-A)W + 2B  as it is more memory-efficient
+        AW = A_sym @ W 
         M = 2 * (alpha * W - AW) + 2 * B
         
         U, _, V = np.linalg.svd(M, full_matrices=False)
@@ -308,7 +306,7 @@ def evaluate_RLDA_performance(X, Y, max_dim=30, n_runs=5, svd_threshold=0.95, tr
     
     Parameters:
     X: data matrix (each column is a sample)
-    Y: labels (1-indexed)
+    Y: labels (1-indexed) as per MATLAB script
     max_dim: maximum dimension to test
     n_runs: number of random train-test splits to average over
     svd_threshold: amount of variance to retain in SVD preprocessing
@@ -464,7 +462,7 @@ def evaluate_RLDA_performance(X, Y, max_dim=30, n_runs=5, svd_threshold=0.95, tr
 
 if __name__ == "__main__":
     # Example usage
-    filename = "Prostate_GE.mat"
+    filename = r"data\Prostate_GE.mat"
     data = loadmat(filename)  # Change path as needed
     #handle data and labels as per biological or image datasets
     if 'fea' in data and 'gnd' in data:
